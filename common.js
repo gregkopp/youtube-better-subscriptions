@@ -55,17 +55,17 @@ async function saveVideoOperation(videoOperation, now) {
     const videoId = videoOperation.slice(1);
 
     watchedVideos[videoOperation] = now;
-    brwsr.storage.local.set({[videoOperation]: now});
+    brwsr.storage.local.set({ [videoOperation]: now });
 
-    delete watchedVideos[(operation === 'w' ? 'n' : 'w') + videoId];
-    brwsr.storage.local.remove((operation === 'w' ? 'n' : 'w') + videoId);
+    delete watchedVideos[(operation === "w" ? "n" : "w") + videoId];
+    brwsr.storage.local.remove((operation === "w" ? "n" : "w") + videoId);
 }
 
 async function watchVideo(videoId, now) {
-    saveVideoOperation('w' + videoId, now);
+    saveVideoOperation("w" + videoId, now);
 }
 function unwatchVideo(videoId, now) {
-    saveVideoOperation('n' + videoId, now);
+    saveVideoOperation("n" + videoId, now);
 }
 
 async function loadWatchedVideos() {
@@ -80,7 +80,7 @@ async function loadWatchedVideos() {
 
         const watchedBatch = items[key];
         if (!Array.isArray(watchedBatch)) {
-            console.error('Invalid watch history item', key);
+            console.error("Invalid watch history item", key);
             continue;
         }
         batches[index] = watchedBatch;
@@ -99,15 +99,17 @@ async function loadWatchedVideos() {
     }
 
     // old format
-    const watchedVideoIds = Object.keys(watchedVideos).filter(key => key.length === 11);
+    const watchedVideoIds = Object.keys(watchedVideos).filter(
+        (key) => key.length === 11
+    );
     if (watchedVideoIds.length > 0) {
         for (const videoId of watchedVideoIds) {
-            saveVideoOperation('w' + videoId, watchedVideos[videoId]);
+            saveVideoOperation("w" + videoId, watchedVideos[videoId]);
         }
         brwsr.storage.local.remove(watchedVideoIds);
 
         await syncWatchedVideos();
-        console.log('Synced old format watch history');
+        console.log("Synced old format watch history");
     }
 }
 
@@ -116,30 +118,35 @@ let saveTimeout;
 async function syncWatchedVideos() {
     if (Date.now() - lastSyncUpdate < WATCHED_SYNC_THROTTLE) {
         clearTimeout(saveTimeout);
-        saveTimeout = setTimeout(syncWatchedVideos, WATCHED_SYNC_THROTTLE - (Date.now() - lastSyncUpdate));
+        saveTimeout = setTimeout(
+            syncWatchedVideos,
+            WATCHED_SYNC_THROTTLE - (Date.now() - lastSyncUpdate)
+        );
         return;
     }
     const batches = {};
     let currentBatch = [];
 
-    const sortedVideoOperations = (
-        Object.keys(watchedVideos)
-            .filter(key => key.length === 12 && typeof watchedVideos[key] === 'number')
-            .sort((key1, key2) => watchedVideos[key2] - watchedVideos[key1])
-    );
+    const sortedVideoOperations = Object.keys(watchedVideos)
+        .filter(
+            (key) => key.length === 12 && typeof watchedVideos[key] === "number"
+        )
+        .sort((key1, key2) => watchedVideos[key2] - watchedVideos[key1]);
 
     for (const videoOperation of sortedVideoOperations) {
         const batchKey = VIDEO_WATCH_KEY + Object.keys(batches).length;
 
         const potentialBatch = [...currentBatch, videoOperation];
         const potentialBatchSize = JSON.stringify({
-            [batchKey]: potentialBatch
+            [batchKey]: potentialBatch,
         }).length;
 
-        if (JSON.stringify({
-            ...batches,
-            [batchKey]: potentialBatch
-        }).length > 100000) {
+        if (
+            JSON.stringify({
+                ...batches,
+                [batchKey]: potentialBatch,
+            }).length > 100000
+        ) {
             // quota exhausted, older entries will be discarded
             break;
         }
@@ -157,20 +164,23 @@ async function syncWatchedVideos() {
     }
 
     try {
-        await new Promise(resolve => {
+        await new Promise((resolve) => {
             brwsr.storage.sync.set(batches, resolve);
         });
         lastSyncUpdate = Date.now();
-    }
-    catch (error) {
-        console.error(error || (typeof runtime !== 'undefined' && runtime.lastError));
+    } catch (error) {
+        console.error(
+            error || (typeof runtime !== "undefined" && runtime.lastError)
+        );
     }
 
-    return Object.values(batches).map(batch => batch.length).reduce((acc, batchLength) => acc + batchLength, 0);
+    return Object.values(batches)
+        .map((batch) => batch.length)
+        .reduce((acc, batchLength) => acc + batchLength, 0);
 }
 
 brwsr.storage.onChanged.addListener((changes, areaName) => {
-    if (areaName !== 'sync') {
+    if (areaName !== "sync") {
         return;
     }
 
@@ -184,4 +194,36 @@ function getCurrentPage() {
     }
 
     return "";
+}
+
+function getStorage(keys) {
+    return new Promise((resolve, reject) => {
+        brwsr.storage.sync.get(keys, resolve);
+    });
+}
+
+function setVideoWatched(videoId, operation) {
+    let videoOperation = (operation || "w") + videoId;
+    let now = new Date().getTime();
+    brwsr.storage.sync.set({ [videoOperation]: now });
+    // in case it was marked as not watched
+    brwsr.storage.sync.remove((operation === "w" ? "n" : "w") + videoId);
+}
+
+function setAllVideosWatched(videoIds) {
+    for (const videoId of videoIds) {
+        let videoOperation = "w" + videoId;
+        let now = new Date().getTime();
+        brwsr.storage.sync.set({ [videoOperation]: now });
+    }
+}
+
+function clearVideoWatched(watchedVideoIds) {
+    if (watchedVideoIds) {
+        brwsr.storage.sync.remove(watchedVideoIds);
+    }
+}
+
+function isVideoWatched(videoId) {
+    return watchedVideos["w" + videoId] !== undefined;
 }

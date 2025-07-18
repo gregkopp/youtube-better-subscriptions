@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(function (message) {
 });
 
 chrome.runtime.onInstalled.addListener(() => {
-    chrome.storage.local.get({ LAST_SHOWN_CHANGELOG_KEY }, showChangelog);
+    chrome.storage.sync.get({ LAST_SHOWN_CHANGELOG_KEY }, showChangelog);
 });
 
 function showChangelog(data) {
@@ -22,6 +22,6 @@ function showChangelog(data) {
         chrome.tabs.create({
             url: "pages/changelog.html",
         });
-        chrome.storage.local.set({ LAST_SHOWN_CHANGELOG_KEY: currentVersion });
+        chrome.storage.sync.set({ LAST_SHOWN_CHANGELOG_KEY: currentVersion });
     }
 }
