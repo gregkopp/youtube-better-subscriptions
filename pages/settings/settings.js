@@ -77,9 +77,6 @@ function setupButtons() {
     document
         .getElementById("watched.clear")
         .addEventListener("click", clearVideos);
-    document.getElementById("clear-storage").addEventListener("click", () => {
-        brwsr.storage.sync.clear();
-    });
 }
 
 async function exportVideos() {
