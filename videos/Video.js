@@ -22,7 +22,12 @@ function changeMarkWatchedToMarkUnwatched(item) {
         let dismissibleDiv = metaDataLine.parentNode;
         dismissibleDiv.removeChild(metaDataLine);
 
-        let markUnwatchedBtn = buildMarkWatchedButton(dismissibleDiv, item, getVideoId(item), false);
+        let markUnwatchedBtn = buildMarkWatchedButton(
+            dismissibleDiv,
+            item,
+            getVideoId(item),
+            false
+        );
         dismissibleDiv.appendChild(markUnwatchedBtn);
     }
 }
@@ -31,21 +36,27 @@ class Video {
     constructor(containingDiv) {
         this.containingDiv = containingDiv;
         this.videoId = getVideoId(containingDiv);
-        this.isStored = watchedVideos['w' + this.videoId];
+        this.isStored = watchedVideos["w" + this.videoId];
         this.buttonId = this.isStored ? MARK_UNWATCHED_BTN : MARK_WATCHED_BTN;
 
         log("Checking video " + this.videoId + " for premiere");
-        let thumbOverlay = containingDiv.querySelector("ytd-thumbnail-overlay-time-status-renderer");
+        let thumbOverlay = containingDiv.querySelector(
+            "ytd-thumbnail-overlay-time-status-renderer"
+        );
         if (thumbOverlay == null) {
             this.isPremiere = false;
         } else {
-            this.isPremiere = thumbOverlay.getAttribute("overlay-style") === "UPCOMING";
+            this.isPremiere =
+                thumbOverlay.getAttribute("overlay-style") === "UPCOMING";
         }
 
         log("Checking video " + this.videoId + " for short");
-        let videoHref = containingDiv.querySelectorAll("a")[0].getAttribute("href");
+        let videoHref = containingDiv
+            .querySelectorAll("a")[0]
+            .getAttribute("href");
         if (videoHref != null) {
-            this.isShort = (videoHref.includes("shorts") || videoHref.includes("adurl"));
+            this.isShort =
+                videoHref.includes("shorts") || videoHref.includes("adurl");
         } else {
             log("Video URL is null - ad.");
             this.isShort = true;
@@ -62,7 +73,7 @@ class Video {
 
     hide() {
         hidden.push(this.containingDiv);
-        this.containingDiv.style.display = 'none';
+        this.containingDiv.style.display = "none";
         this.containingDiv.classList.add(HIDDEN_CLASS);
     }
 

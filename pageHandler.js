@@ -2,12 +2,12 @@ settingsLoadedCallbacks.push(initExtension);
 
 function initExtension() {
     const PAGES = Object.freeze({
-        "subscriptions": "/feed/subscriptions",
-        "video": "/watch",
-        "short": "/shorts",
-        "channel": "/videos",
-        "channelLive": "/streams",
-        "home": ""
+        subscriptions: "/feed/subscriptions",
+        video: "/watch",
+        short: "/shorts",
+        channel: "/videos",
+        channelLive: "/streams",
+        home: "",
     });
 
     async function handlePageChange() {
@@ -27,19 +27,24 @@ function initExtension() {
                     break;
                 case PAGES.video:
                     onVideoPage();
-                    break
+                    break;
                 case PAGES.home:
-                    if (settings["settings.hide.watched.support.home"]) initSubs();
+                    if (settings["settings.hide.watched.support.home"])
+                        initSubs();
                     break;
                 default:
                     if (page.includes(PAGES.short)) {
                         onShortPage();
-                    } else if ((page.includes(PAGES.channel) || page.includes(PAGES.channelLive)) && settings["settings.hide.watched.support.channel"]) {
+                    } else if (
+                        (page.includes(PAGES.channel) ||
+                            page.includes(PAGES.channelLive)) &&
+                        settings["settings.hide.watched.support.channel"]
+                    ) {
                         await initSubs();
                     }
             }
         } catch (e) {
-            logError(e)
+            logError(e);
         }
     }
 
@@ -55,14 +60,20 @@ function initExtension() {
             let pageChangeObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutationRecord) => {
                     //is page fully loaded?
-                    if (mutationRecord.target.attributes["aria-valuenow"].value === "100") {
+                    if (
+                        mutationRecord.target.attributes["aria-valuenow"]
+                            .value === "100"
+                    ) {
                         handlePageChange();
                     }
                 });
             });
 
             //observe when the page loader becomes visible or hidden
-            pageChangeObserver.observe(pageLoader, {attributes: true, attributeFilter: ['hidden']});
+            pageChangeObserver.observe(pageLoader, {
+                attributes: true,
+                attributeFilter: ["hidden"],
+            });
 
             //first page doesnt trigger the event, so lets do it manually
             handlePageChange();

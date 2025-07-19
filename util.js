@@ -20,17 +20,25 @@ function logError(error) {
 function prepareMessage(content = null) {
     let message = LOG_HEADER;
     if (printDate) message += new Date().toTimeString() + ": ";
-    if (content != null) message += (typeof content === 'object') ? JSON.stringify(content) : content;
+    if (content != null)
+        message +=
+            typeof content === "object" ? JSON.stringify(content) : content;
 
     return message;
 }
 
 function download(filename, content, applicationType = "text/plain") {
-    let element = document.createElement('a');
-    element.setAttribute('href', 'data:' + applicationType + ';charset=utf-8,' + encodeURIComponent(content));
-    element.setAttribute('download', filename);
+    let element = document.createElement("a");
+    element.setAttribute(
+        "href",
+        "data:" +
+            applicationType +
+            ";charset=utf-8," +
+            encodeURIComponent(content)
+    );
+    element.setAttribute("download", filename);
 
-    element.style.display = 'none';
+    element.style.display = "none";
     document.body.appendChild(element);
 
     element.click();
@@ -43,7 +51,10 @@ function isRendered(domObj) {
     }
 
     var cs = getComputedStyle(domObj);
-    if (cs.getPropertyValue("display") != "none" && cs.getPropertyValue("visibility") != "hidden") {
+    if (
+        cs.getPropertyValue("display") != "none" &&
+        cs.getPropertyValue("visibility") != "hidden"
+    ) {
         return isRendered(domObj.parentNode);
     }
     return false;

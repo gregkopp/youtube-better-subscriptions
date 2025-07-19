@@ -5,12 +5,18 @@ let hideShorts = null;
 let intervalId = null;
 
 function isYouTubeWatched(item) {
-    let ytWatchedPercentThreshold = settings["settings.mark.watched.youtube.watched"];
-    return ytWatchedPercentThreshold === true && (
-            (item.querySelectorAll("yt-formatted-string.style-scope.ytd-thumbnail-overlay-playback-status-renderer").length > 0 || //has "WATCHED" on thumbnail
-                    item.querySelectorAll("#progress.style-scope.ytd-thumbnail-overlay-resume-playback-renderer").length > 0) || //has progress bar on thumbnail TODO allow percentage threshold
-            item.hasAttribute("is-dismissed") //also hide empty blocks left in by pressing "HIDE" button
-    )
+    let ytWatchedPercentThreshold =
+        settings["settings.mark.watched.youtube.watched"];
+    return (
+        ytWatchedPercentThreshold === true &&
+        (item.querySelectorAll(
+            "yt-formatted-string.style-scope.ytd-thumbnail-overlay-playback-status-renderer"
+        ).length > 0 || //has "WATCHED" on thumbnail
+            item.querySelectorAll(
+                "#progress.style-scope.ytd-thumbnail-overlay-resume-playback-renderer"
+            ).length > 0 || //has progress bar on thumbnail TODO allow percentage threshold
+            item.hasAttribute("is-dismissed")) //also hide empty blocks left in by pressing "HIDE" button
+    );
 }
 
 function hideWatchedChanged(event) {
@@ -37,13 +43,20 @@ function hideWatchedChanged(event) {
 function collapseSectionChanged(event) {
     try {
         let checkbox = event.target;
-        log("Checkbox for section " + checkbox.getAttribute("id") + " changed. New value is: " + checkbox.checked);
+        log(
+            "Checkbox for section " +
+                checkbox.getAttribute("id") +
+                " changed. New value is: " +
+                checkbox.checked
+        );
 
-        let contentDiv = checkbox.closest(sectionDismissableQuery()).querySelector(sectionContentsQuery());
+        let contentDiv = checkbox
+            .closest(sectionDismissableQuery())
+            .querySelector(sectionContentsQuery());
         if (checkbox.checked) {
-            contentDiv.style.display = '';
+            contentDiv.style.display = "";
         } else {
-            contentDiv.style.display = 'none';
+            contentDiv.style.display = "none";
             loadMoreVideos();
         }
     } catch (e) {

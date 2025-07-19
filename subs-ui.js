@@ -16,7 +16,7 @@ function showWatched() {
     log("Showing watched videos");
 
     for (let item of hidden) {
-        item.style.display = '';
+        item.style.display = "";
         item.classList.remove(HIDDEN_CLASS);
     }
     hidden = [];
@@ -32,7 +32,7 @@ function buildUI() {
     addSettingsButton();
 
     if (settings["settings.hide.watched.ui.stick.right"])
-        addedElems[0].after(...addedElems)
+        addedElems[0].after(...addedElems);
 }
 
 function buildMenuButtonContainer() {
@@ -64,7 +64,9 @@ function addSettingsButton() {
     addElementToMenuUI(settingsButton);
 
     let messenger = document.getElementById(SETTINGS_BTN);
-    messenger.addEventListener("click", () => brwsr.runtime.sendMessage({"action": "openOptionsPage"}));
+    messenger.addEventListener("click", () =>
+        brwsr.runtime.sendMessage({ action: "openOptionsPage" })
+    );
 }
 
 function addHideAllMenuButton() {
@@ -75,7 +77,9 @@ function addHideAllMenuButton() {
         hideAllButtonContainer.classList.add("subs-grid-menu-mark-all");
         hideAllButtonContainer.setAttribute("id", MARK_ALL_WATCHED_BTN);
 
-        hideAllButtonContainer.appendChild(document.createTextNode("Mark all as watched"));
+        hideAllButtonContainer.appendChild(
+            document.createTextNode("Mark all as watched")
+        );
 
         addElementToMenuUI(hideAllButtonContainer);
 
@@ -101,7 +105,11 @@ function addHideWatchedCheckbox() {
 
     let toggleContainer = document.createElement("div");
     toggleContainer.setAttribute("id", HIDE_WATCHED_TOGGLE);
-    toggleContainer.classList.add("toggle-container", "style-scope", "tp-yt-paper-toggle-button");
+    toggleContainer.classList.add(
+        "toggle-container",
+        "style-scope",
+        "tp-yt-paper-toggle-button"
+    );
     if (hideWatched) {
         toggleContainer.classList.add("subs-btn-hide-watched-checked");
     } else {
@@ -109,9 +117,17 @@ function addHideWatchedCheckbox() {
     }
 
     let toggleBar = document.createElement("div");
-    toggleBar.classList.add("toggle-bar", "style-scope", "tp-yt-paper-toggle-button");
+    toggleBar.classList.add(
+        "toggle-bar",
+        "style-scope",
+        "tp-yt-paper-toggle-button"
+    );
     let toggleButton = document.createElement("div");
-    toggleButton.classList.add("toggle-button", "style-scope", "tp-yt-paper-toggle-button");
+    toggleButton.classList.add(
+        "toggle-button",
+        "style-scope",
+        "tp-yt-paper-toggle-button"
+    );
 
     toggleContainer.appendChild(toggleBar);
     toggleContainer.appendChild(toggleButton);
@@ -126,24 +142,37 @@ function addElementToMenuUI(element) {
     log("Adding element to menu UI");
 
     let topMenuEnd = document.getElementById("end");
-    if (topMenuEnd != null) { //just in case...
+    if (topMenuEnd != null) {
+        //just in case...
         if (settings["settings.hide.watched.ui.stick.right"])
             topMenuEnd.prepend(element);
-        else
-            topMenuEnd.parentNode.insertBefore(element, topMenuEnd);
+        else topMenuEnd.parentNode.insertBefore(element, topMenuEnd);
     }
 
     addedElems.push(element);
 }
 
-function buildMarkWatchedButton(dismissibleDiv, item, videoId, isMarkWatchedBtn = true) {
+function buildMarkWatchedButton(
+    dismissibleDiv,
+    item,
+    videoId,
+    isMarkWatchedBtn = true
+) {
     let enclosingDiv = document.createElement("div");
     enclosingDiv.setAttribute("id", METADATA_LINE);
-    enclosingDiv.classList.add("style-scope", "ytd-thumbnail-overlay-toggle-button-renderer");
+    enclosingDiv.classList.add(
+        "style-scope",
+        "ytd-thumbnail-overlay-toggle-button-renderer"
+    );
 
     let button = document.createElement("button");
-    button.setAttribute("id", isMarkWatchedBtn ? MARK_WATCHED_BTN : MARK_UNWATCHED_BTN);
-    button.classList.add(isMarkWatchedBtn ? "subs-btn-mark-watched" : "subs-btn-mark-unwatched");
+    button.setAttribute(
+        "id",
+        isMarkWatchedBtn ? MARK_WATCHED_BTN : MARK_UNWATCHED_BTN
+    );
+    button.classList.add(
+        isMarkWatchedBtn ? "subs-btn-mark-watched" : "subs-btn-mark-unwatched"
+    );
     button.setAttribute("role", "button");
 
     let vid = new SubscriptionVideo(item);
@@ -157,16 +186,16 @@ function buildMarkWatchedButton(dismissibleDiv, item, videoId, isMarkWatchedBtn 
             let metaDataElem = item.querySelector("#" + METADATA_LINE);
             let container = metaDataElem.parentNode;
             container.removeChild(metaDataElem);
-            container.appendChild(buildMarkWatchedButton(dismissibleDiv, item, videoId));
-        }
+            container.appendChild(
+                buildMarkWatchedButton(dismissibleDiv, item, videoId)
+            );
+        };
     }
 
     enclosingDiv.appendChild(button);
 
-    if (isMarkWatchedBtn)
-        dismissibleDiv.classList.remove("semitransparent");
-    else
-        dismissibleDiv.classList.add("semitransparent");
+    if (isMarkWatchedBtn) dismissibleDiv.classList.remove("semitransparent");
+    else dismissibleDiv.classList.add("semitransparent");
 
     return enclosingDiv;
 }
@@ -176,8 +205,9 @@ let collapsibleIdNum = 0;
 function addCollapsibleBtnToSection(sectionHeader) {
     try {
         // only add if doesnt have it already
-        if (sectionHeader.parentNode.querySelector("." + COLLAPSE_CLASS) == null) {
-
+        if (
+            sectionHeader.parentNode.querySelector("." + COLLAPSE_CLASS) == null
+        ) {
             let collapsibleId = COLLAPSE_SECTION_CHECKBOX + collapsibleIdNum++;
 
             let collapseCheckbox = document.createElement("input");
@@ -216,14 +246,14 @@ function processSections() {
             // section has no videos that arent hidden, so hide it
             if (!section.classList.contains(HIDDEN_CLASS)) {
                 log("Hiding section '" + sectionTitle + "'");
-                section.style.display = 'none';
+                section.style.display = "none";
                 section.classList.add(HIDDEN_CLASS);
             }
         } else {
             // section has some videos that arent hidden, in case we hid it before, show it now
             if (section.classList.contains(HIDDEN_CLASS)) {
                 log("Showing section '" + sectionTitle + "'");
-                section.style.display = '';
+                section.style.display = "";
                 section.classList.remove(HIDDEN_CLASS);
             }
         }
@@ -259,16 +289,24 @@ function removeWatchedAndAddButton() {
     }
 
     // if shorts shelf is empty, hide it
-    const gridElement = document.querySelector('ytd-two-column-browse-results-renderer ytd-rich-grid-renderer #contents');
+    const gridElement = document.querySelector(
+        "ytd-two-column-browse-results-renderer ytd-rich-grid-renderer #contents"
+    );
     if (gridElement && isRendered(gridElement)) {
-        [...gridElement.querySelectorAll(':scope > ytd-rich-section-renderer')].forEach(richSectionElement => {
-            const contents = richSectionElement.querySelector(':scope > #content > ytd-rich-shelf-renderer > #dismissible > #contents');
+        [
+            ...gridElement.querySelectorAll(
+                ":scope > ytd-rich-section-renderer"
+            ),
+        ].forEach((richSectionElement) => {
+            const contents = richSectionElement.querySelector(
+                ":scope > #content > ytd-rich-shelf-renderer > #dismissible > #contents"
+            );
 
             if (!contents) {
                 return;
             }
-            if (![...contents.childNodes].some(child => isRendered(child))) {
-                richSectionElement.style.display = 'none';
+            if (![...contents.childNodes].some((child) => isRendered(child))) {
+                richSectionElement.style.display = "none";
             }
         });
     }
@@ -289,11 +327,11 @@ function removeUI() {
     addedElems = [];
 
     // delete built buttons
-    document.querySelectorAll("#" + METADATA_LINE).forEach(e => e.remove());
+    document.querySelectorAll("#" + METADATA_LINE).forEach((e) => e.remove());
 
     // make hidden videos visible
     for (let item of hidden) {
-        item.style.display = '';
+        item.style.display = "";
         item.classList.remove(HIDDEN_CLASS);
     }
     hidden = [];
