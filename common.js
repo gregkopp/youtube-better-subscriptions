@@ -1,4 +1,4 @@
-const PREFIX = "osasoft-better-subscriptions_";
+const PREFIX = "gregkopp-better-subscriptions_";
 
 const DEFAULT_SETTINGS = {
     "settings.hide.watched.label": true,
